@@ -1,7 +1,7 @@
 pragma solidity ^0.5.0;
 
-contract Adoption {
-    struct Item{			
+contract Autotrade {
+	struct Item{			
         string vehicle_brand; // vehicle's brand
 		string vehicle_model; // which specific model is this vehicle
         string description; // information about a vehicle, e.g. production year, mileage
@@ -38,7 +38,7 @@ contract Adoption {
 		itemId ++;
 	}
 
-    function buyNow(uint vehicleId, uint bid_amount) public returns (uint){
+    function buyNow(uint vehicleId) public returns (uint){
      require(vehicleId >= 0 && vehicleId <=15); // use require() to make sure ID is in range.
      buyers[vehicleId] = msg.sender; // mes.sender is the person called this function
      return vehicleId; // send petId back as confirmation
@@ -157,4 +157,5 @@ contract Adoption {
         }
 		return result;
 	}
+
 }

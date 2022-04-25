@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Secondhand car shop </title>
+    <title>Pete's Pet Shop</title>
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -21,13 +21,13 @@
     <div class="container">
       <div class="row">
         <div class="col-xs-12 col-sm-8 col-sm-push-2">
-          <h1 class="text-center">A Secondhand automobile shop</h1>
+          <h1 class="text-center">Pete's Pet Shop</h1>
           <hr/>
           <br/>
         </div>
       </div>
 
-      <div id="carsRow" class="row">
+      <div id="carRow" class="row">
         <!-- PETS LOAD HERE -->
       </div>
     </div>
@@ -39,39 +39,37 @@
             <h3 class="panel-title">Scrappy</h3>
           </div>
           <div class="panel-body">
-            <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="images/golden-retriever.jpeg" data-holder-rendered="true">
-            <br/><br/>
-              <strong>Highest Offer: </strong><span class="highest-bid">0</span>
+            <img alt="140x140" data-src="holder.js/140x140" class="img-rounded img-center" style="width: 100%;" src="https://animalso.com/wp-content/uploads/2017/01/Golden-Retriever_6.jpg" data-holder-rendered="true">
+            <br>
+            <br>
+              <strong>Highest Offer: </strong><span class="highest-bid"></span>
               <br>
-              <strong>Highest Offer Account: </strong><span class="highest-bidder">Nah</span>
-              <br>
-              <strong>Increase in Value: </strong><span class="incr-in-value">0</span>
+              <strong>Increase in Offer Value: </strong><span class="incr-in-value"></span>
               <br>
               <br>
-              <strong>Starting Price: </strong><span class="starting_price">0</span>
+              <strong>Starting Price: </strong><span class="starting_price"></span>
               <br>   
-              <strong>Minimum Offer Increment: </strong><span class="min_incr">0</span>
+              <strong>Minimum Increment: </strong><span class="min_incr"></span>
               <br>             
-              <strong>Buy_Now Price: </strong><span class="buy_now_price">0</span>
+              <strong>Buy-Now Price: </strong><span class="buy_now_price"></span>
               <br>
               <br>
-            <strong>Brand</strong>: <span class="vehicle_brand">No Brand</span><br/>
-            <strong>Model</strong>: <span class="vehicle_model">No Model</span><br/>
-            <strong>description</strong>: <span class="description">No Description</span><br/><br/>
+            <strong>Vehicle Brand</strong>: <span class="vehicle_brand">No Brand</span><br/>
+            <strong>Vehicle Model</strong>: <span class="vehicle_model">No Model</span><br/>
+            <strong>Vehicle description</strong>: <span class="description">No Description</span><br/><br/>
             <form>
               <div class="form-row align-items-center">
                 <div class="col-auto">
                   <input type="number" class="form-control ipt-amt" placeholder="Offer Amount" min="0.00" name="bid" oninput="App.handleInputChanges(this.id, this.value)">
                 </div>
-                <div class="col-auto">
-                  <button class="btn btn-dark btn-submit" type="button" >Submit My Offer</button>
-                </div>
-                <div class="col-auto">
-                <button class="btn btn-default btn-buy" type="button" data-id="0" >Buy it now</button>
-                </div>
               </div> 
             </form>
-
+            <div>
+              <button class="btn btn-default btn-submit" type="button" data-id="0">Submit My Offer</button>
+            </div>
+            <div>
+            <button class="btn btn-default btn-buy" type="button" data-id="0" >Buy it now</button>
+            </div>
           </div>
         </div>
       </div>
