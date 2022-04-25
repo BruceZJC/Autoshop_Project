@@ -38,7 +38,7 @@ contract Adoption {
 		itemId ++;
 	}
 
-    function buyNow(uint vehicleId, uint bid_amount) public returns (uint){
+    function buyNow(uint vehicleId) public returns (uint){
      require(vehicleId >= 0 && vehicleId <=15); // use require() to make sure ID is in range.
      buyers[vehicleId] = msg.sender; // mes.sender is the person called this function
      return vehicleId; // send petId back as confirmation

@@ -1,7 +1,7 @@
 App = {
   web3Provider: null,
   contracts: {},
-  account: "",
+  account: "0x0000000000000000000000000000000000000000",
 
   init: async function() {
     // Load pets.
@@ -17,31 +17,14 @@ App = {
         carTemplate.find('.description').text(data[i].description); // decription of the item
         carTemplate.find('.min_incr').text(`ETH ${data[i].min_incr}`); // minimum increment
         carTemplate.find('.starting_price').text(`ETH ${data[i].starting_price}`); // base price
+        carTemplate.find('.btn-buy').attr('data-id', data[i].id);
+        carTemplate.find('.btn-submit').attr('data-id', data[i].id);
 
         // Creating identifier attributes for HTML elements
         carTemplate.find('.highest-bid').attr('data-id', data[i].id); // adding attribute to the highest bid so we can dynamically change it
         carTemplate.find('.btn-submit').attr('data-id', data[i].id); // adding attribute for submit so we can associate itemids to submit buttons
         carTemplate.find('.ipt-amt').attr('id',`input-amt-${data[i].id}`); // same as above for input amount
         carRow.append(carTemplate.html());
-      }
-
-      var carRow2 = $('#carRow2');
-      var carTemplate2 = $('#carTemplate2');
-      for (i = 0; i < data.length; i ++) {
-        carTemplate2.find('.panel-title').text(`Vehicle ${i+1}`); // auction number as title
-        carTemplate2.find('img').attr('src', data[i].picture); // image 
-        carTemplate2.find('.vehicle_brand').text(data[i].vehicle_brand); // name of item 
-        carTemplate2.find('.vehicle_model').text(data[i].vehicle_model); // name of item 
-        carTemplate2.find('.buy_now_price').text(`ETH ${data[i].buy_now_price}`); // name of item 
-        carTemplate2.find('.description').text(data[i].description); // decription of the item
-        carTemplate2.find('.min_incr').text(`ETH ${data[i].min_incr}`); // minimum increment
-        carTemplate2.find('.starting_price').text(`ETH ${data[i].starting_price}`); // base price
-
-        // Creating identifier attributes for HTML elements
-        carTemplate2.find('.highest-bid').attr('data-id', data[i].id); // adding attribute to the highest bid so we can dynamically change it
-        carTemplate2.find('.btn-submit').attr('data-id', data[i].id); // adding attribute for submit so we can associate itemids to submit buttons
-        carTemplate2.find('.ipt-amt').attr('id',`input-amt-${data[i].id}`); // same as above for input amount
-        carRow2.append(carTemplate2.html());
       }
     });
 
@@ -108,11 +91,10 @@ web3 = new Web3(App.web3Provider);
     var adoptionInstance;
     App.contracts.Adoption.deployed().then(function(instance) {
       adoptionInstance = instance;
-
   return adoptionInstance.getBuyers.call();
-}).then(function(adopters) {
-  for (i = 0; i < adopters.length; i++) {
-    if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
+}).then(function(buyer) {
+  for (i = 0; i < buyer.length; i++) {
+    if (buyer[i] !== '0x0000000000000000000000000000000000000000') {
       $('.panel-car').eq(i).find('button').text('Success').attr('disabled', true);
     }
   }
@@ -124,7 +106,7 @@ web3 = new Web3(App.web3Provider);
 
   handlePurchase: function(event) {
     event.preventDefault();
-    var petId = parseInt($(event.target).data('id'));
+    var vehicleId = parseInt($(event.target).data('id'));
     var bid_amount = parseInt($(event.target).data('buy_now_price'));
 
     var purchaseInstance;
@@ -137,10 +119,11 @@ web3 = new Web3(App.web3Provider);
 
     App.contracts.Adoption.deployed().then(function(instance) {
       purchaseInstance = instance;
-
     // Execute adopt as a transaction by sending account
-    return purchaseInstance.buyNow(petId, bid_amount, {from: account});
+
+    return purchaseInstance.buyNow(vehicleId, {from: account}); ////////////////////////////////    You Wen Ti
     }).then(function(result) {
+      document.write(result)
       return App.markPurchased();
     }).catch(function(err) {
       console.log(err.message);
@@ -153,7 +136,7 @@ web3 = new Web3(App.web3Provider);
     var offerInstance;
     App.contracts.Adoption.deployed().then(function(instance) {
       offerInstance = instance;
-      return offerInstance.getAllPrices()
+      return offerInstance.getAllPrices.call();
     }).then(function(a) {
         for (j=0; j < a.length; j++) {
           document.write(1111)
