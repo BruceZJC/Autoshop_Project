@@ -1,7 +1,7 @@
 App = {
   web3Provider: null,
   contracts: {},
-  account: "0x0",
+  account: "0x0000000000000000000000000000000000000000",
 
   init: async function() {
     // Load pets.
@@ -193,7 +193,7 @@ web3 = new Web3(App.web3Provider);
       offerInstance = instance;
   
       // Execute place bid as a transaction by sending account
-      return offerInstance.placeBid(vehicleId, offerAmount, {from: account});
+      return offerInstance.placeNewOffer(vehicleId, offerAmount, {from: account});
     }).then(function(result) {
       return App.updateNumOfPurchase(), App.updateOfferPrice(), App.updateHighestOfferer();
     }).catch(function(err) {

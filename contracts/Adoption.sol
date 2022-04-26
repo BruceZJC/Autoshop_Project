@@ -17,12 +17,12 @@ contract Adoption {
     uint[carCount] public arrayForItems;
 	uint public itemId = 0;
     mapping(uint => Item) public vehicles; // item hash table
-    mapping(uint => address) public highestBidders; // highest bidders hash table 
-    event BidEvent(uint _itemId, uint indexed _bidAmt); // Declaring events which help us use ethereum's logging facility
+    mapping(uint => address) public highestOfferers; // highest bidders hash table 
+    event offerPlacement(uint _vehicleId, uint indexed _offerAmount); // Declaring events which help us use ethereum's logging facility
 
     function addItem (string memory vehicle_brand, string memory vehicle_model, string memory description, uint buy_now_price, uint starting_price, uint min_incr, uint offer_price) public { 	
 		vehicles[itemId] = Item(vehicle_brand, vehicle_model, description, buy_now_price, starting_price, min_incr, offer_price);
-		highestBidders[itemId] = address(0);
+		highestOfferers[itemId] = address(0);
 		itemId ++;
 	}
     
@@ -71,12 +71,39 @@ contract Adoption {
     function getHighestOfferer() public view returns (address[carCount] memory) {
 		address[carCount] memory arrayOfBidders;
 		for (uint i=0;i < carCount; i++) {
-			arrayOfBidders[i] = highestBidders[i];
+			arrayOfBidders[i] = highestOfferers[i];
 		}
 		return arrayOfBidders;
 
 	}
 
 
-    
+    function placeNewOffer (uint _vehicleId, uint _offerAmount) public returns (uint) {
+        // Requirements 
+		require(_vehicleId >= 0 && _vehicleId < carCount, "Item trying to play new offer on is invalid"); 	
+		require(check_offer_high_enough (_vehicleId, _offerAmount),"New Offer is lower or equal to the highest bid value");
+		require(check_highest_bidder(_vehicleId, msg.sender), "Person bidding is the highest bidder");
+
+        vehicles[_vehicleId].offer_price = _offerAmount; 
+		highestOfferers[_vehicleId] = msg.sender;
+
+		emit offerPlacement(_vehicleId, _offerAmount); 
+
+        return _vehicleId; // return the item back 	
+
+    }
+
+	function check_offer_high_enough (uint _vehicleId, uint _offerAmount) public view returns (bool) {
+		if (_offerAmount > vehicles[_vehicleId].offer_price) return true;
+		else return false;
+	}
+	
+	function check_highest_bidder (uint _vehicleId, address _wallet) public view returns (bool) {
+		if (_wallet == highestOfferers[_vehicleId]) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 }
