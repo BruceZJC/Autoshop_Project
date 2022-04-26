@@ -1,7 +1,7 @@
 App = {
   web3Provider: null,
   contracts: {},
-  account: "0x0000000000000000000000000000000000000000",
+  account: "0x0",
 
   init: async function() {
     // Load pets.
@@ -24,6 +24,8 @@ App = {
         carTemplate.find('.highest-bid').attr('data-id', data[i].id); // adding attribute to the highest bid so we can dynamically change it
         carTemplate.find('.btn-submit').attr('data-id', data[i].id); // adding attribute for submit so we can associate itemids to submit buttons
         carTemplate.find('.ipt-amt').attr('id',`input-amt-${data[i].id}`); // same as above for input amount
+        carTemplate.find('.ipt-amt').attr('step',`${data[i].min_incr}`); // same as above for input amount
+        carTemplate.find('.ipt-amt').attr('min',`${data[i].starting_price}`); // same as above for input amount
         carRow.append(carTemplate.html());
       }
     });
@@ -59,77 +61,91 @@ web3 = new Web3(App.web3Provider);
 
   initContract: function() {
     $.getJSON('Adoption.json', function(data) {
-  // Get the necessary contract artifact file and instantiate it with @truffle/contract
-  var AdoptionArtifact = data;
-  App.contracts.Adoption = TruffleContract(AdoptionArtifact);
+      // Get the necessary contract artifact file and instantiate it with @truffle/contract
+      var AdoptionArtifact = data;
+      App.contracts.Adoption = TruffleContract(AdoptionArtifact);
+    
+      // Set the provider for our contract
+      App.contracts.Adoption.setProvider(App.web3Provider);
 
-  // Set the provider for our contract
-  App.contracts.Adoption.setProvider(App.web3Provider);
-
-  web3.eth.getCoinbase(function(err, account) {
-    if (err === null) {
-      App.account = account;
-      $("#account").text(account);
-    }
-  })
-
-  // Use our contract to retrieve and mark the adopted pets
-  return App.markPurchased(), App.updateOfferPrice(), App.updateOfferIncreases();
-});
-
+      web3.eth.getCoinbase(function(err, account) {
+        if (err === null) {
+          App.account = account;
+          $("#account").text(account);
+        }
+      })
+    
+      // Use our contract to retrieve and mark the adopted pets
+      return App.markPurchase(), App.updateOfferPrice(), App.updateNumOfPurchase(), App.updateHighestOfferer();
+    });
+    
 
     return App.bindEvents();
   },
 
   bindEvents: function() {
     $(document).on('click', '.btn-buy', App.handlePurchase);
-    $(document).on('click', '.btn-submit', App.updateOfferPrice);
-    $(document).on('click', '.btn-submit', App.updateOfferIncreases);
+    $(document).on('click', '.btn-submit', App.handleNewOffer);
   },
 
-  markPurchased: function() {
+  markPurchase: function() {
     var adoptionInstance;
+
     App.contracts.Adoption.deployed().then(function(instance) {
       adoptionInstance = instance;
-  return adoptionInstance.getBuyers.call();
-}).then(function(buyer) {
-  for (i = 0; i < buyer.length; i++) {
-    if (buyer[i] !== '0x0000000000000000000000000000000000000000') {
-      $('.panel-car').eq(i).find('button').text('Success').attr('disabled', true);
-    }
-  }
-}).catch(function(err) {
-  console.log(err.message);
-});
-
+    
+      return adoptionInstance.getAdopters.call();
+    }).then(function(adopters) {
+      for (i = 0; i < adopters.length; i++) {
+        if (adopters[i] !== '0x0000000000000000000000000000000000000000') {
+          $('.panel-pet').eq(i).find('button').text('Sold').attr('disabled', true);
+        }
+      }
+    }).catch(function(err) {
+      console.log(err.message);
+    });
+    
   },
 
   handlePurchase: function(event) {
     event.preventDefault();
-    var vehicleId = parseInt($(event.target).data('id'));
-    var bid_amount = parseInt($(event.target).data('buy_now_price'));
 
-    var purchaseInstance;
+    var petId = parseInt($(event.target).data('id'));
+
+    var adoptionInstance;
+
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
       }
-
-    var account = accounts[0];
-
-    App.contracts.Adoption.deployed().then(function(instance) {
-      purchaseInstance = instance;
-    // Execute adopt as a transaction by sending account
-
-    return purchaseInstance.buyNow(vehicleId, {from: account}); ////////////////////////////////    You Wen Ti
-    }).then(function(result) {
-      document.write(result)
-      return App.markPurchased();
-    }).catch(function(err) {
-      console.log(err.message);
+    
+      var account = accounts[0];
+    
+      App.contracts.Adoption.deployed().then(function(instance) {
+        adoptionInstance = instance;
+    
+        // Execute adopt as a transaction by sending account
+        return adoptionInstance.adopt(petId, {from: account});
+      }).then(function(result) {
+        return App.markPurchase(), App.updateNumOfPurchase();
+      }).catch(function(err) {
+        console.log(err.message);
+      });
     });
-  });
+    
+  },
 
+  updateNumOfPurchase: function() {
+    var offerInstance;
+    App.contracts.Adoption.deployed().then(function(instance) {
+      offerInstance = instance;
+      return offerInstance.getNumOfPurchase.call();
+    }).then(function(result) {
+      $(document).find('.num-purchase').text(`${result}`);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+  
   },
 
   updateOfferPrice: function() {
@@ -137,54 +153,54 @@ web3 = new Web3(App.web3Provider);
     App.contracts.Adoption.deployed().then(function(instance) {
       offerInstance = instance;
       return offerInstance.getAllPrices.call();
-    }).then(function(a) {
-        for (j=0; j < a.length; j++) {
-          document.write(1111)
-          $(document).find('.highest-bid').eq(j).text(`$${a[j]}`);
+    }).then(function(result) {
+        for (j=0; j < result.length; j++) {
+          $(document).find('.highest-bid').eq(j).text(`ETH ${result[j]}`);
         }
       }).catch(function(err) {
         console.log(err.message);
       });
   
   },
-  
-  // Function to update auction value increases from base price
-  // Data obtained from deployed smart contract
-  updateOfferIncreases: function () {
-    var auctionInstance;
-  
+
+  updateHighestOfferer: function() {
+    var offerInstance;
+
     App.contracts.Adoption.deployed().then(function(instance) {
-      auctionInstance=instance;
-      return auctionInstance.getAllIncrease(); 
-    }).then(function(increases) {
-      for (j=0;j<increases.length;j++) {
-        $(document).find('.incr-in-value').eq(j).text(`${increases[j]}%`);
+      offerInstance=instance;
+
+      return offerInstance.getHighestOfferer.call(); 
+    }).then(function(result) {
+      for (j=0;j<result.length;j++) {
+        $(document).find('.highest-account').eq(j).text(`${result[j]}`);
       }
     }).catch(function(err) {
       console.log(err.message);
     })
-      
+  
   },
 
   handleNewOffer: function(event) {
     event.preventDefault();
-    var carId = parseInt($(event.target).data('id'));
-    var bid_amount = parseInt($(`#input-amt-${carId}`).val());
+
+    var vehicleId = parseInt($(event.target).data('id'));
+    var offerAmount = parseInt($(`#input-amt-${vehicleId}`).val());
     
-    var auctionInstance;    
+    var offerInstance;    
     var account = App.account;
   
     App.contracts.Adoption.deployed().then(function(instance) {
-      auctionInstance = instance;
+      offerInstance = instance;
   
       // Execute place bid as a transaction by sending account
-      return auctionInstance.placeOffer(carId, bid_amount, {from: account});
+      return offerInstance.placeBid(vehicleId, offerAmount, {from: account});
     }).then(function(result) {
-      return App.updateOfferPrice();
+      return App.updateNumOfPurchase(), App.updateOfferPrice(), App.updateHighestOfferer();
     }).catch(function(err) {
       console.log(err.message);
     });
-    }
+  }
+
 
 };
 

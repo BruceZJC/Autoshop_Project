@@ -6,9 +6,9 @@
     "vehicle_model": "M2",
     "description": "Talk about M2",
     "buy_now_price": 40,
-    "starting_price": 10,
-    "min_incr": 1,
-    "auction_price": 1
+    "starting_price": 20,
+    "min_incr": 2,
+    "auction_price": 20
   },
   {
     "id": 1,

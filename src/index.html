@@ -22,19 +22,22 @@
       <div class="row">
         <div class="col-xs-12 col-sm-8 col-sm-push-2">
           <h1 class="text-center">Pete's Pet Shop</h1>
+          <strong class="text-center">Number Of Success Purchase: </strong><span class="num-purchase">?</span>
+          <br>
           <hr/>
           <br/>
         </div>
       </div>
-
+      
       <div id="carRow" class="row">
         <!-- PETS LOAD HERE -->
       </div>
     </div>
-
+    
     <div id="carTemplate" style="display: none;">
+      
       <div class="col-sm-6 col-md-4 col-lg-3">
-        <div class="panel panel-default panel-car">
+        <div class="panel panel-default panel-pet">
           <div class="panel-heading">
             <h3 class="panel-title">Scrappy</h3>
           </div>
@@ -44,7 +47,7 @@
             <br>
               <strong>Highest Offer: </strong><span class="highest-bid"></span>
               <br>
-              <strong>Increase in Offer Value: </strong><span class="incr-in-value"></span>
+              <strong>Highest Offer Account: </strong><span class="highest-account">No Offerer</span>
               <br>
               <br>
               <strong>Starting Price: </strong><span class="starting_price"></span>
@@ -57,18 +60,10 @@
             <strong>Vehicle Brand</strong>: <span class="vehicle_brand">No Brand</span><br/>
             <strong>Vehicle Model</strong>: <span class="vehicle_model">No Model</span><br/>
             <strong>Vehicle description</strong>: <span class="description">No Description</span><br/><br/>
-            <form>
-              <div class="form-row align-items-center">
-                <div class="col-auto">
-                  <input type="number" class="form-control ipt-amt" placeholder="Offer Amount" min="0.00" name="bid" oninput="App.handleInputChanges(this.id, this.value)">
-                </div>
-              </div> 
-            </form>
-            <div class="panel panel-default panel-button" >
-              <button class="btn btn-default btn-submit" type="button" data-id = "0">Submit My Offer</button>
+            <input type="number" class="form-control ipt-amt" placeholder="Offer Amount" min="0.00" name="bid" step = "1">
+            <button class="btn btn-default btn-submit" type="button" data-id = "0">Submit My Offer</button>
             <br>
             <button class="btn btn-default btn-buy" type="button" data-id = "0">Buy it now</button>
-            </div>
           </div>
         </div>
       </div>
