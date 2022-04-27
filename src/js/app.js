@@ -3,35 +3,62 @@ App = {
   contracts: {},
   account: "0x0000000000000000000000000000000000000000",
 
-  init: async function() {
-    // Load pets.
-    $.getJSON('../cars.json', function(data) {
-      var carRow = $('#carRow');
-      var carTemplate = $('#carTemplate');
-      for (i = 0; i < data.length; i ++) {
-        carTemplate.find('.panel-title').text(`Vehicle ${i+1}`); // auction number as title
-        carTemplate.find('img').attr('src', data[i].picture); // image 
-        carTemplate.find('.vehicle_brand').text(data[i].vehicle_brand); // name of item 
-        carTemplate.find('.vehicle_model').text(data[i].vehicle_model); // name of item 
-        carTemplate.find('.buy_now_price').text(`ETH ${data[i].buy_now_price}`); // name of item 
-        carTemplate.find('.description').text(data[i].description); // decription of the item
-        carTemplate.find('.min_incr').text(`ETH ${data[i].min_incr}`); // minimum increment
-        carTemplate.find('.starting_price').text(`ETH ${data[i].starting_price}`); // base price
-        carTemplate.find('.btn-buy').attr('data-id', data[i].id);
-        carTemplate.find('.btn-submit').attr('data-id', data[i].id);
+  init: async function(obj) {
+        // Load pets.
 
-        // Creating identifier attributes for HTML elements
-        carTemplate.find('.highest-bid').attr('data-id', data[i].id); // adding attribute to the highest bid so we can dynamically change it
-        carTemplate.find('.btn-submit').attr('data-id', data[i].id); // adding attribute for submit so we can associate itemids to submit buttons
-        carTemplate.find('.ipt-amt').attr('id',`input-amt-${data[i].id}`); // same as above for input amount
-        carTemplate.find('.ipt-amt').attr('step',`${data[i].min_incr}`); // same as above for input amount
-        carTemplate.find('.ipt-amt').attr('min',`${data[i].starting_price}`); // same as above for input amount
-        carRow.append(carTemplate.html());
-      }
-    });
+        $.getJSON('../cars.json', function(data) {
+            console.log(obj)
+            var carRow = $('#carRow');
+            var carTemplate = $('#carTemplate');
+            for (i = 0; i < data.length; i++) {
+                if (obj == null) {
+                    carTemplate.find('.panel-title').text(`Vehicle ${i+1}`); // auction number as title
+                    carTemplate.find('img').attr('src', data[i].picture); // image 
+                    carTemplate.find('.vehicle_brand').text(data[i].vehicle_brand); // name of item 
+                    carTemplate.find('.vehicle_model').text(data[i].vehicle_model); // name of item 
+                    carTemplate.find('.buy_now_price').text(`ETH ${data[i].buy_now_price}`); // name of item 
+                    carTemplate.find('.description').text(data[i].description); // decription of the item
+                    carTemplate.find('.min_incr').text(`ETH ${data[i].min_incr}`); // minimum increment
+                    carTemplate.find('.starting_price').text(`ETH ${data[i].starting_price}`); // base price
+                    carTemplate.find('.btn-buy').attr('data-id', data[i].id);
+                    carTemplate.find('.btn-submit').attr('data-id', data[i].id);
 
-    return await App.initWeb3();
-  },
+                    // Creating identifier attributes for HTML elements
+                    carTemplate.find('.highest-bid').attr('data-id', data[i].id); // adding attribute to the highest bid so we can dynamically change it
+                    carTemplate.find('.btn-submit').attr('data-id', data[i].id); // adding attribute for submit so we can associate itemids to submit buttons
+                    carTemplate.find('.ipt-amt').attr('id',`input-amt-${data[i].id}`); // same as above for input amount
+                    carTemplate.find('.ipt-amt').attr('step',`${data[i].min_incr}`); // same as above for input amount
+                    carTemplate.find('.ipt-amt').attr('min',`${data[i].starting_price}`); // same as above for input amount
+                    $("#kaho").append(carTemplate.html());
+                } else {
+                    if (data[i].vehicle_brand.toUpperCase().indexOf(obj.toUpperCase()) !== -1 || data[i].vehicle_model.toUpperCase().indexOf(obj.toUpperCase()) !== -1) {
+                        carTemplate.find('.panel-title').text(`Vehicle ${i+1}`); // auction number as title
+                        carTemplate.find('img').attr('src', data[i].picture); // image 
+                        carTemplate.find('.vehicle_brand').text(data[i].vehicle_brand); // name of item 
+                        carTemplate.find('.vehicle_model').text(data[i].vehicle_model); // name of item 
+                        carTemplate.find('.buy_now_price').text(`ETH ${data[i].buy_now_price}`); // name of item 
+                        carTemplate.find('.description').text(data[i].description); // decription of the item
+                        carTemplate.find('.min_incr').text(`ETH ${data[i].min_incr}`); // minimum increment
+                        carTemplate.find('.starting_price').text(`ETH ${data[i].starting_price}`); // base price
+                        carTemplate.find('.btn-buy').attr('data-id', data[i].id);
+                        carTemplate.find('.btn-submit').attr('data-id', data[i].id);
+
+                        // Creating identifier attributes for HTML elements
+                        carTemplate.find('.highest-bid').attr('data-id', data[i].id); // adding attribute to the highest bid so we can dynamically change it
+                        carTemplate.find('.btn-submit').attr('data-id', data[i].id); // adding attribute for submit so we can associate itemids to submit buttons
+                        carTemplate.find('.ipt-amt').attr('id',`input-amt-${data[i].id}`); // same as above for input amount
+                        carTemplate.find('.ipt-amt').attr('step',`${data[i].min_incr}`); // same as above for input amount
+                        carTemplate.find('.ipt-amt').attr('min',`${data[i].starting_price}`); // same as above for input amount
+                        $("#kaho").append(carTemplate.html());
+                        // console.log(carTemplate.html())
+                    }
+                }
+
+            }
+        });
+
+        return await App.initWeb3();
+    },
 
   initWeb3: async function() {
     // Modern dapp browsers...
@@ -208,4 +235,20 @@ $(function() {
   $(window).load(function() {
     App.init();
   });
+});
+
+$("#search").eq(0).bind('input propertychange', function(e) {
+
+    console.log($(this).val())
+    if ($(this).val() !== "undefined") {
+        $('#kaho .col-sm-6').remove();
+        App.init($(this).val());
+    }
+})
+
+
+$('input:radio[name="optradio"]').click(function() {
+    $('#kaho .col-sm-6').remove();
+    var checkValue = $('input:radio[name="optradio"]:checked').val();
+    App.init(checkValue);
 });
